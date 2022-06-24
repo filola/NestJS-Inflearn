@@ -5,6 +5,7 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { BoardRepository } from './board.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './board.entity';
+import { isRegExp } from 'util/types';
 
 @Injectable()
 export class BoardsService {
@@ -12,7 +13,7 @@ export class BoardsService {
     @InjectRepository(BoardRepository) private boardRepository: BoardRepository,
   ) {}
 
-  async getBoardById(id: any): Promise<Board> {
+  async getBoardById(id: number): Promise<Board> {
     const found = await this.boardRepository.findOne(id);
 
     if (!found) {
@@ -36,10 +37,12 @@ export class BoardsService {
     const { title, description } = CreateBoardDto;
 
     const board = this.boardRepository.create({
-      title,
-      description,
-      status: BoardStatus.PUBLIC,
+      title: title,
+      description: description,
+      // status: BoardStatus.PUBLIC,
     });
+
+    console.log(board);
 
     await this.boardRepository.save(board);
     return board;
@@ -55,11 +58,30 @@ export class BoardsService {
   //   this.boards.push(board);
   //   return board;
   // }
+
+  async updateBoardStatus(id: number, status: BoardStatus): Promise<void> {
+    const board = await this.getBoardById(id);
+
+    board.status = status;
+
+    await this.boardRepository.save(board);
+  }
   // updateBoardStatus(id: string, status: BoardStatus) {
   //   const Board = this.getBoardById(id);
   //   Board.status = status;
   //   return Board;
   // }
+
+  async deleteBoard(id: number): Promise<void> {
+    const result = await this.boardRepository.delete(id);
+    console.log(result);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Can't find Board with id ${id}`);
+    }
+
+    console.log('result', result);
+  }
   // deleteBoard(id: string) {
   //   const found = this.getBoardById(id);
   //   this.boards.filter((board) => board.id === found.id);
