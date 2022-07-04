@@ -29,12 +29,12 @@ export class UserRepository extends Repository<User> {
     }
   }
 
-  async loginCheck(authCredentalsDto: AuthCredentalsDto): Promise<string> {
-    const { username, password } = authCredentalsDto;
-    const user = await this.findOne({ username });
+  // async loginCheck(authCredentalsDto: AuthCredentalsDto): Promise<string> {
+  //   const { username, password } = authCredentalsDto;
+  //   const user = await this.findOne({ username });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return 'login Success';
-    } else throw new UnauthorizedException('login Failed');
-  }
+  //   if (user && (await bcrypt.compare(password, user.password))) {
+  //     return 'login Success';
+  //   } else throw new UnauthorizedException('login Failed');
+  // }
 }
